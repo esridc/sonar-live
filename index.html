@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title>Sonar Live</title>
+  </head>
+  <style>
+    body{ font-family: sans-serif; }
+    h2 { margin: 20px; float: left; }
+    em { margin: 20px; float: right; }
+    #app {
+      height:100%;
+      width: 100%;
+    }
+  </style>
+  <body>
+    <h2>Sonar Live</h2>
+    <em id="location">updating location...</em>
+    <iframe id="app" src="" frameborder="0"></iframe>
+
+    <script>
+    var appUrl = "https://dcdev.maps.arcgis.com/apps/webappviewer/index.html?id=9373b09b0da34a1fb7a087f5a1894939";
+    var locationUrl = "https://services.arcgis.com/bkrWlSKcjUDFDtgw/ArcGIS/rest/services/SonarComments/FeatureServer/0/query?f=json&outFields=*&where=1=1";
+    var currentLocation = "";
+
+    setInterval(checkLocation, 3000);
+
+    function checkLocation() {
+      getLocation().then(function(location) {
+        if(currentLocation != location) {
+          currentLocation = location;
+          document.getElementById("location").innerText = location;
+          updateLocation(location);
+        } else {
+          console.log("Not updating...")
+        }
+
+      })
+    };
+    function updateLocation(address) {
+      go(appUrl + "&find=" +  address);
+    }
+    function getLocation() {
+      return fetch(locationUrl)
+      .then(function(response) {
+        return response.json();
+      }).then(function(layer) {
+        var location = layer.features[layer.features.length-1];
+        return location.attributes.Location;
+      })
+    }
+
+    function go(loc) {
+      document.getElementById('app').src = loc;
+    }
+    </script>
+  </body>
+</html>
