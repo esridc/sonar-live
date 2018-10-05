@@ -25,9 +25,9 @@
 
     function checkLocation() {
       getLocation().then(function(location) {
-        if(currentLocation != location) {
-          currentLocation = location;
-          document.getElementById("location").innerText = location;
+        if(currentLocation != location.attributes.Location) {
+          currentLocation = location.attributes.Location;
+          document.getElementById("location").innerText = location.attributes.Comments + " at " + location.attributes.Location;
           updateLocation(location);
         } else {
           console.log("Not updating...")
@@ -36,7 +36,10 @@
       })
     };
     function updateLocation(address) {
-      go(appUrl + "&find=" +  address);
+      // go(appUrl + "&find=" +  address);
+      var center = "&center=" +  address.geometry.x + "," + address.geometry.y + ",102100&level=20";
+      center += "&marker=" +  address.geometry.x + "," + address.geometry.y + ",102100,Emergency,,Emergency";
+      go(appUrl + center);
     }
     function getLocation() {
       return fetch(locationUrl)
@@ -44,7 +47,7 @@
         return response.json();
       }).then(function(layer) {
         var location = layer.features[layer.features.length-1];
-        return location.attributes.Location;
+        return location;
       })
     }
 
